@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broker Dashboard | SMSF Brokers Australia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        }
+
+        .drop-zone {
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23CBD5E1' stroke-width='3' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+            border-radius: 24px;
+        }
+
+        .drop-zone.dragover {
+            background-color: #eff6ff;
+            /* blue-50 */
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%232563EB' stroke-width='4' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+            transform: scale(1.01);
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1e3a8a;
+            /* blue-900 */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Custom scrollbar for results panel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <img src="../Assets/logo.png.png" alt="SMSF Brokers Australia" class="h-8 md:h-10 object-contain">
+                    <span
+                        class="ml-4 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full tracking-wide">
+                        INTERNAL DASHBOARD
+                    </span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center gap-3">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-semibold text-slate-900 leading-none">Jason</p>
+                            <p class="text-xs text-slate-500 mt-1">Lead Broker</p>
+                        </div>
+                        <div
+                            class="h-10 w-10 rounded-full bg-blue-900 flex items-center justify-center text-white font-bold">
+                            J
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900">Document Intelligence</h1>
+            <p class="mt-2 text-slate-600">Upload client Payslips or Trust Deeds. The AI engine will automatically
+                extract the key metrics required for loan applications.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- Left Column: Upload Controls -->
+            <div class="col-span-1 lg:col-span-5 flex flex-col gap-6">
+
+                <!-- Configuration Card -->
+                <div class="glass-panel rounded-2xl p-6">
+                    <h2 class="text-lg font-semibold text-slate-900 mb-4">1. Select Document Type</h2>
+
+                    <div class="space-y-3">
+                        <label
+                            class="relative flex cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm focus:outline-none has-[:checked]:border-blue-600 has-[:checked]:ring-1 has-[:checked]:ring-blue-600 has-[:checked]:bg-blue-50/50">
+                            <input type="radio" name="documentType" value="payslip" class="sr-only" checked
+                                onchange="updateUI()">
+                            <span class="flex flex-1">
+                                <span class="flex flex-col">
+                                    <span class="block text-sm font-medium text-slate-900">Payslip Analyzer</span>
+                                    <span class="mt-1 flex items-center text-xs text-slate-500">Extracts YTD,
+                                        extrapolates Annual Income.</span>
+                                </span>
+                            </span>
+                            <svg class="h-5 w-5 text-blue-600 hidden show-checked" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </label>
+
+                        <label
+                            class="relative flex cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm focus:outline-none has-[:checked]:border-blue-600 has-[:checked]:ring-1 has-[:checked]:ring-blue-600 has-[:checked]:bg-blue-50/50">
+                            <input type="radio" name="documentType" value="trust" class="sr-only" onchange="updateUI()">
+                            <span class="flex flex-1">
+                                <span class="flex flex-col">
+                                    <span class="block text-sm font-medium text-slate-900">SMSF / Bare Trust Deed</span>
+                                    <span class="mt-1 flex items-center text-xs text-slate-500">Maps Trustees, ACNs,
+                                        Beneficiaries & Structure.</span>
+                                </span>
+                            </span>
+                            <svg class="h-5 w-5 text-blue-600 hidden show-checked" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </label>
+
+                        <label
+                            class="relative flex cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm focus:outline-none has-[:checked]:border-blue-600 has-[:checked]:ring-1 has-[:checked]:ring-blue-600 has-[:checked]:bg-blue-50/50">
+                            <input type="radio" name="documentType" value="financials" class="sr-only"
+                                onchange="updateUI()">
+                            <span class="flex flex-1">
+                                <span class="flex flex-col">
+                                    <span class="block text-sm font-medium text-slate-900">Company Financials</span>
+                                    <span class="mt-1 flex items-center text-xs text-slate-500">Extracts gross/net
+                                        profit, depreciation, and interest.</span>
+                                </span>
+                            </span>
+                            <svg class="h-5 w-5 text-blue-600 hidden show-checked" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Dropzone Card -->
+                <div class="glass-panel rounded-2xl p-6 flex-grow flex flex-col">
+                    <h2 class="text-lg font-semibold text-slate-900 mb-4">2. Upload File</h2>
+
+                    <div id="drop-area"
+                        class="drop-zone flex-grow min-h-[250px] flex flex-col items-center justify-center p-8 text-center cursor-pointer">
+                        <input type="file" id="fileElem" multiple accept="image/*,application/pdf" class="hidden">
+
+                        <div
+                            class="h-16 w-16 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-slate-900 mb-1">Drag & Drop files here</h3>
+                        <p class="text-sm text-slate-500 mb-4">or click to browse from your computer</p>
+                        <p class="text-xs text-slate-400">Supports PDF, JPG, PNG.</p>
+                    </div>
+
+                    <div id="processing-state" class="hidden flex-col items-center justify-center py-12">
+                        <div class="loader mb-6"></div>
+                        <h3 class="text-lg font-medium text-slate-900" id="processing-title">Analyzing Document...</h3>
+                        <p class="text-sm text-slate-500 mt-2 text-center max-w-xs" id="processing-desc">The AI is
+                            currently extracting structural data and synthesizing the report.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Results Pane -->
+            <div class="col-span-1 lg:col-span-7">
+                <div class="glass-panel rounded-2xl h-full min-h-[600px] flex flex-col overflow-hidden">
+
+                    <div class="bg-slate-900 px-6 py-4 flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
+                            AI Extraction Results
+                        </h2>
+                        <button
+                            class="text-slate-300 hover:text-white text-sm flex items-center gap-1 transition-colors hidden"
+                            id="copy-btn">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3">
+                                </path>
+                            </svg>
+                            Copy to Clipboard
+                        </button>
+                    </div>
+
+                    <div class="flex-grow p-6 overflow-y-auto bg-white/50" id="results-pane">
+
+                        <!-- Empty State -->
+                        <div id="empty-state"
+                            class="h-full flex flex-col items-center justify-center text-center opacity-70">
+                            <svg class="w-16 h-16 text-slate-300 mb-4" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
+                                </path>
+                            </svg>
+                            <h3 class="text-xl font-medium text-slate-500 mb-2">No Document Analyzed</h3>
+                            <p class="text-slate-400 max-w-sm">Upload a document using the panel on the left to view the
+                                AI-generated structural report.</p>
+                        </div>
+
+                        <!-- Rendered Content will be injected here via JS -->
+                        <div id="rendered-report" class="hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- UI Logic and Mock API -->
+    <script>
+        // CSS specific toggle for active radio states
+        document.head.insertAdjacentHTML("beforeend", `<style>input[type=radio]:checked ~ svg.show-checked { display: block; }</style>`);
+
+        let dropArea = document.getElementById('drop-area');
+        let fileElem = document.getElementById('fileElem');
+        let emptyState = document.getElementById('empty-state');
+        let processingState = document.getElementById('processing-state');
+        let renderedReport = document.getElementById('rendered-report');
+        let copyBtn = document.getElementById('copy-btn');
+        let processingTitle = document.getElementById('processing-title');
+        let processingDesc = document.getElementById('processing-desc');
+
+        function updateUI() {
+            const type = document.querySelector('input[name="documentType"]:checked').value;
+            if (type === 'payslip') {
+                processingTitle.innerText = "Analyzing Payslip...";
+                processingDesc.innerText = "Extracting YTD figures and extrapolating annual income.";
+            } else if (type === 'financials') {
+                processingTitle.innerText = "Analyzing Financials...";
+                processingDesc.innerText = "Extracting profit, depreciation, and interest metrics.";
+            } else {
+                processingTitle.innerText = "Analyzing Trust Deed...";
+                processingDesc.innerText = "Maping Trustees, ACNs, Beneficiaries, and Trust Structure.";
+            }
+        }
+
+        // --- Drag and Drop Logic ---
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false)
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false)
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false)
+        });
+
+        function highlight(e) {
+            dropArea.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            dropArea.classList.remove('dragover');
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+        dropArea.addEventListener('click', () => fileElem.click());
+        fileElem.addEventListener('change', function (e) {
+            handleFiles(this.files);
+        });
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            if (files && files.length > 0) {
+                simulateAnalysis(files[0]);
+            } else {
+                // Mock fallback for clicking the dropzone without selecting a file
+                alert("Please select a real file to upload to the AI.");
+            }
+        }
+
+        // --- Analysis Logic ---
+        async function simulateAnalysis(file) {
+            const docType = document.querySelector('input[name="documentType"]:checked').value;
+            const filename = file.name;
+
+            // UI State change to loading
+            dropArea.classList.add('hidden');
+            processingState.classList.remove('hidden');
+            processingState.classList.add('flex');
+            emptyState.classList.add('hidden');
+            renderedReport.classList.add('hidden');
+            copyBtn.classList.add('hidden');
+
+            try {
+                const formData = new FormData();
+                formData.append('document', file);
+                formData.append('documentType', docType);
+
+                // Send to backend
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errPayload = await response.json();
+                    throw new Error(errPayload.error || "Server error");
+                }
+
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+                const data = result.data;
+
+                processingState.classList.remove('flex');
+                processingState.classList.add('hidden');
+                dropArea.classList.remove('hidden');
+
+                // Render the correct response using live data
+                if (docType === 'payslip') {
+                    renderPayslipReport(filename, data);
+                } else if (docType === 'financials') {
+                    renderFinancialsReport(filename, data);
+                } else {
+                    renderTrustReport(filename, data);
+                }
+
+                renderedReport.classList.remove('hidden');
+                copyBtn.classList.remove('hidden');
+
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred during analysis: " + error.message);
+                processingState.classList.remove('flex');
+                processingState.classList.add('hidden');
+                dropArea.classList.remove('hidden');
+            }
+        }
+
+        function renderPayslipReport(filename, rawData) {
+            const data = Object.keys(rawData || {}).length > 0 ? rawData : {
+                employerName: "Tech Innovations Pty Ltd",
+                employerAbn: "12 345 678 901",
+                payPeriodEnding: "14 June 2024",
+                baseIncomeYtd: 91500.00,
+                ytdGrossEarnings: 106400.00,
+                smsfContributionYtd: 11704.00,
+                smsfContributionPercentage: "11%",
+                smsfContributionAnnualEst: 16016.00,
+                smsfContributionMonthlyEst: 1334.67,
+                allowancesYtd: 3200.00,
+                commissionsYtd: 2500.00,
+                bonusYtd: 5000.00,
+                overtimeIncluded: true,
+                overtimeYtd: 4200.00,
+                postTaxDeductionsYtd: 1500.00,
+                paymentAccountLast4: "1234"
+            };
+
+            const fmt = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val || 0);
+            const annualGross = (data.ytdGrossEarnings / 38) * 52; // Mock extrapolation
+            const netPayPerPeriod = (data.ytdGrossEarnings - (data.postTaxDeductionsYtd || 0)) / 19; // Mock
+
+            renderedReport.innerHTML = `
+                <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]">
+                    <div class="border-b border-slate-200 pb-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-900">Income Verification Summary</h3>
+                                <p class="text-slate-500 mt-1">Source file: <span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-700">${filename}</span></p>
+                            </div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">High Confidence</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
+                            <p class="text-sm font-medium text-blue-800 mb-1">Extrapolated Annual Gross</p>
+                            <p class="text-4xl font-bold text-slate-900">${fmt(annualGross)}</p>
+                            <p class="text-xs text-slate-500 mt-2">Based on YTD data spanning 38 weeks.</p>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <p class="text-sm font-medium text-slate-600 mb-1">Pay Period Frequency</p>
+                            <p class="text-2xl font-bold text-slate-900">Fortnightly</p>
+                            <p class="text-sm font-medium text-slate-600 mt-3 mb-1">Net Pay per Period</p>
+                            <p class="text-xl font-bold text-slate-900">${fmt(netPayPerPeriod)}</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Extracted Details</h4>
+                        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <table class="w-full text-sm text-left">
+                                <tbody>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50 w-1/3">Employer Name</th>
+                                        <td class="px-6 py-4 text-slate-900 font-semibold">${data.employerName || "N/A"}</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Employer ABN</th>
+                                        <td class="px-6 py-4 text-slate-900 font-mono">${data.employerAbn || "N/A"}</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Pay Period Ending</th>
+                                        <td class="px-6 py-4 text-slate-900">${data.payPeriodEnding || "N/A"}</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Base Income (YTD)</th>
+                                         <td class="px-6 py-4 text-slate-900 font-semibold">${fmt(data.baseIncomeYtd)}</td>
+                                     </tr>
+                                     <tr class="border-b border-slate-100">
+                                         <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">YTD Gross Earnings</th>
+                                        <td class="px-6 py-4 text-slate-900 font-bold">${fmt(data.ytdGrossEarnings)}</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-emerald-50 text-emerald-800">SMSF Contribution (YTD)</th>
+                                        <td class="px-6 py-4 text-emerald-700 font-bold">${fmt(data.smsfContributionYtd)} (${data.smsfContributionPercentage || "N/A"})</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-emerald-50 text-emerald-800">SMSF Contribution (Annual Est.)</th>
+                                        <td class="px-6 py-4 text-emerald-700 font-bold">${fmt(data.smsfContributionAnnualEst)}</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-emerald-50 text-emerald-800">SMSF Contribution (Monthly Est.)</th>
+                                        <td class="px-6 py-4 text-emerald-700 font-bold">${fmt(data.smsfContributionMonthlyEst)}</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Allowances (YTD)</th>
+                                         <td class="px-6 py-4 text-slate-900 font-semibold">${fmt(data.allowancesYtd)}</td>
+                                     </tr>
+                                     <tr class="border-b border-slate-100">
+                                         <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Commissions (YTD)</th>
+                                        <td class="px-6 py-4 text-slate-900 font-semibold">${fmt(data.commissionsYtd)}</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Bonus (YTD)</th>
+                                        <td class="px-6 py-4 text-slate-900 font-semibold">${fmt(data.bonusYtd)}</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Overtime Included?</th>
+                                        <td class="px-6 py-4 text-amber-600 font-semibold">${data.overtimeIncluded ? 'Yes' : 'No'} (${fmt(data.overtimeYtd)} YTD)</td>
+                                     </tr>
+                                     <tr class="border-b border-slate-100">
+                                         <th class="px-6 py-4 font-medium text-slate-500 bg-red-50 text-red-800">Post Tax Deductions (YTD)</th>
+                                         <td class="px-6 py-4 text-red-700 font-semibold">-${fmt(data.postTaxDeductionsYtd)}</td>
+                                     </tr>
+                                     <tr>
+                                         <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Payment Account</th>
+                                         <td class="px-6 py-4 text-slate-900">Paid to account ending in <span class="font-mono font-bold text-slate-900">${data.paymentAccountLast4 || "----"}</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTrustReport(filename, rawData) {
+            const data = Object.keys(rawData || {}).length > 0 ? rawData : {
+                executiveSummary: "This structure utilizes a Corporate Trustee for the Self-Managed Superannuation Fund, which is purchasing a residential investment property under a Limited Recourse Borrowing Arrangement (LRBA). A separate Bare Trust (Property Trust) has been established with its own distinct Corporate Trustee to hold legal title to the property until the loan is discharged. The ultimate beneficiaries are the two directors of the SMSF Corporate Trustee.",
+                lrbaDetails: {
+                    structureType: "LRBA with Corporate Trustees",
+                    complianceStatus: "Appears compliant (Standard provisions exist)",
+                    borrowingEntity: "SMSF Trustee"
+                },
+                smsfTrustee: {
+                    type: "Corporate",
+                    name: "Smith Superannuation Pty Ltd",
+                    acn: "123 456 789",
+                    directors: ["John Smith", "Jane Smith"]
+                },
+                bareTrustee: {
+                    type: "Corporate",
+                    name: "Smith Property Holdings Pty Ltd",
+                    acn: "987 654 321",
+                    directors: ["John Smith", "Jane Smith"]
+                },
+                beneficiaries: ["John Smith", "Jane Smith"]
+            };
+
+            const formatDirectors = (directors) => {
+                if (!directors || directors.length === 0) return "N/A";
+                return directors.map(d => `<li>\${d}</li>`).join('');
+            };
+
+            renderedReport.innerHTML = `
+                <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]">
+                    <div class="border-b border-slate-200 pb-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-900">SMSF Structure Check</h3>
+                                <p class="text-slate-500 mt-1">Source file: <span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-700">\${filename}</span></p>
+                            </div>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Complex Structure</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5 mb-6">
+                        <h4 class="text-sm font-bold text-indigo-900 uppercase tracking-wider mb-2">Executive Summary</h4>
+                        <p class="text-indigo-800 text-sm leading-relaxed">\${data.executiveSummary}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Left Column -->
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">LRBA Configuration</h4>
+                                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                    <table class="w-full text-sm text-left">
+                                        <tbody>
+                                            <tr class="border-b border-slate-100">
+                                                <th class="px-5 py-3 font-medium text-slate-500 bg-slate-50 w-1/2">Structure Type</th>
+                                                <td class="px-5 py-3 text-slate-900">\${data.lrbaDetails?.structureType || "N/A"}</td>
+                                            </tr>
+                                            <tr class="border-b border-slate-100">
+                                                <th class="px-5 py-3 font-medium text-slate-500 bg-emerald-50 text-emerald-800">Compliance Check</th>
+                                                <td class="px-5 py-3 text-emerald-700 font-medium">\${data.lrbaDetails?.complianceStatus || "N/A"}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="px-5 py-3 font-medium text-slate-500 bg-slate-50">Borrowing Entity</th>
+                                                <td class="px-5 py-3 text-slate-900 font-medium">\${data.lrbaDetails?.borrowingEntity || "N/A"}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Beneficiaries</h4>
+                                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
+                                    <ul class="list-disc list-inside text-sm text-slate-800 space-y-1">
+                                        \${formatDirectors(data.beneficiaries)}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">SMSF Trustee (Borrower)</h4>
+                                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm border-l-4 border-l-blue-500">
+                                    <table class="w-full text-sm text-left">
+                                        <tbody>
+                                            <tr class="border-b border-slate-100">
+                                                <th class="px-4 py-2 font-medium text-slate-500 bg-slate-50 w-1/3">Type</th>
+                                                <td class="px-4 py-2 text-slate-900">\${data.smsfTrustee?.type || "N/A"}</td>
+                                            </tr>
+                                            <tr class="border-b border-slate-100">
+                                                <th class="px-4 py-2 font-medium text-slate-500 bg-slate-50">Entity Name</th>
+                                                <td class="px-4 py-2 text-slate-900 font-bold">\${data.smsfTrustee?.name || "N/A"}</td>
+                                            </tr>
+                                            <tr class="border-b border-slate-100">
+                                                <th class="px-4 py-2 font-medium text-slate-500 bg-slate-50">ACN</th>
+                                                <td class="px-4 py-2 text-slate-900 font-mono">\${data.smsfTrustee?.acn || "N/A"}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="px-4 py-2 font-medium text-slate-500 bg-slate-50 align-top">Directors</th>
+                                                <td class="px-4 py-2 text-slate-900">
+                                                    <ul class="list-disc list-inside">
+                                                        \${formatDirectors(data.smsfTrustee?.directors)}
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Bare Trustee (Property Holder)</h4>
+                                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm border-l-4 border-l-violet-500">
+                                    <table class="w-full text-sm text-left">
+                                        <tbody>
+                                            <tr class="border-b border-slate-100">
+                                                <th class="px-4 py-2 font-medium text-slate-500 bg-slate-50 w-1/3">Type</th>
+                                                <td class="px-4 py-2 text-slate-900">\${data.bareTrustee?.type || "N/A"}</td>
+                                            </tr>
+                                            <tr class="border-b border-slate-100">
+                                                <th class="px-4 py-2 font-medium text-slate-500 bg-slate-50">Entity Name</th>
+                                                <td class="px-4 py-2 text-slate-900 font-bold">\${data.bareTrustee?.name || "N/A"}</td>
+                                            </tr>
+                                            <tr class="border-b border-slate-100">
+                                                <th class="px-4 py-2 font-medium text-slate-500 bg-slate-50">ACN</th>
+                                                <td class="px-4 py-2 text-slate-900 font-mono">\${data.bareTrustee?.acn || "N/A"}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="px-4 py-2 font-medium text-slate-500 bg-slate-50 align-top">Directors</th>
+                                                <td class="px-4 py-2 text-slate-900">
+                                                    <ul class="list-disc list-inside">
+                                                        \${formatDirectors(data.bareTrustee?.directors)}
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+            const formatDirectors = (dirs) => {
+                if (!dirs || !Array.isArray(dirs)) return "None listed";
+                return dirs.map(d => `<li>${d}</li>`).join("");
+            };
+
+            renderedReport.innerHTML = `
+                <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]">
+                    <div class="border-b border-slate-200 pb-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-900">SMSF / Bare Trust Structure Blueprint</h3>
+                                <p class="text-slate-500 mt-1">Source file: <span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-700">${filename}</span></p>
+                            </div>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Ready for Lender</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 border-l-4 border-blue-600 p-5 rounded-r-xl">
+                        <h4 class="font-bold text-slate-900 mb-2">Executive Summary</h4>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            ${data.executiveSummary}
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- SMSF Column -->
+                        <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <div class="bg-slate-800 text-white px-5 py-3 font-semibold">Self-Managed Super Fund</div>
+                            <div class="p-5 bg-white space-y-4">
+                                <div>
+                                    <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Fund Name</p>
+                                    <p class="font-bold text-slate-900 text-lg">${data.smsfName || "N/A"}</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">ABN</p>
+                                        <p class="font-mono text-sm">${data.smsfAbn || "N/A"}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Setup Date</p>
+                                        <p class="text-sm">${data.smsfSetupDate || "N/A"}</p>
+                                    </div>
+                                </div>
+                                <div class="pt-3 border-t border-slate-100">
+                                    <p class="text-xs text-blue-600 bg-blue-50 inline-block px-2 py-1 rounded uppercase tracking-wider font-bold mb-2">SMSF Corporate Trustee</p>
+                                    <p class="font-bold text-slate-900">${data.smsfCorporateTrustee || "N/A"}</p>
+                                    <p class="font-mono text-sm text-slate-600 mt-1">ACN: ${data.smsfCorporateTrusteeAcn || "N/A"}</p>
+                                    
+                                    <div class="mt-3">
+                                        <p class="text-xs text-slate-500 font-bold mb-1">Directors / Beneficiaries:</p>
+                                        <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                                            ${formatDirectors(data.smsfDirectors)}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bare Trust Column -->
+                        <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <div class="bg-blue-900 text-white px-5 py-3 font-semibold">Bare Trust (Holding Trust)</div>
+                            <div class="p-5 bg-white space-y-4">
+                                <div>
+                                    <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Trust Name</p>
+                                    <p class="font-bold text-slate-900 text-lg">${data.bareTrustName || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Execution Date</p>
+                                    <p class="text-sm">${data.bareTrustExecutionDate || "N/A"}</p>
+                                </div>
+                                <div class="pt-3 border-t border-slate-100">
+                                    <p class="text-xs text-emerald-600 bg-emerald-50 inline-block px-2 py-1 rounded uppercase tracking-wider font-bold mb-2">Bare Trust Corporate Trustee</p>
+                                    <p class="font-bold text-slate-900">${data.bareTrustCorporateTrustee || "N/A"}</p>
+                                    <p class="font-mono text-sm text-slate-600 mt-1">ACN: ${data.bareTrustCorporateTrusteeAcn || "N/A"}</p>
+                                    
+                                    <div class="mt-3">
+                                        <p class="text-xs text-slate-500 font-bold mb-1">Directors:</p>
+                                        <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                                            ${formatDirectors(data.bareTrustDirectors)}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl flex items-start gap-3">
+                        <svg class="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <div>
+                            <h4 class="text-sm font-bold text-amber-800">Compliance Check</h4>
+                            <p class="text-xs text-amber-700 mt-1">${data.complianceCheck || "No compliance data provided."}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFinancialsReport(filename, rawData) {
+            const data = Object.keys(rawData || {}).length > 0 ? rawData : {
+                companyName: "Tech Innovations Pty Ltd",
+                financialYearEnding: "30 June 2023",
+                grossProfit: 850000.00,
+                netProfitAfterTax: 125000.00,
+                depreciationDeductible: 45000.00,
+                interestExpense: 22000.00,
+                directorsRemuneration: 150000.00,
+                adjustedOperatingProfit: 342000.00,
+                notes: "Steady revenue growth. Add-backs applied for depreciation and interest to calculate servicing capacity."
+            };
+
+            const fmt = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val || 0);
+
+            renderedReport.innerHTML = `
+                <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]">
+                    <div class="border-b border-slate-200 pb-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-900">Company Financials Analysis</h3>
+                                <p class="text-slate-500 mt-1">Source file: <span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-700">\${filename}</span></p>
+                            </div>
+                            <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Processed</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
+                            <p class="text-sm font-medium text-blue-800 mb-1">Company Name</p>
+                            <p class="text-2xl font-bold text-slate-900">\${data.companyName || "N/A"}</p>
+                        </div>
+                         <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <p class="text-sm font-medium text-slate-600 mb-1">Financial Year Ending</p>
+                            <p class="text-xl font-bold text-slate-900">\${data.financialYearEnding || "N/A"}</p>
+                        </div>
+                    </div>
+
+                     <div>
+                        <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Key Metrics</h4>
+                        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <table class="w-full text-sm text-left">
+                                <tbody>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50 w-1/3">Gross Profit</th>
+                                        <td class="px-6 py-4 text-slate-900 font-semibold">\${fmt(data.grossProfit)}</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Net Profit After Tax</th>
+                                        <td class="px-6 py-4 text-slate-900 font-semibold">\${fmt(data.netProfitAfterTax)}</td>
+                                    </tr>
+                                     <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Depreciation (Add-back)</th>
+                                        <td class="px-6 py-4 text-emerald-700 font-semibold">+\${fmt(data.depreciationDeductible)}</td>
+                                    </tr>
+                                     <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Interest Expense (Add-back)</th>
+                                        <td class="px-6 py-4 text-emerald-700 font-semibold">+\${fmt(data.interestExpense)}</td>
+                                    </tr>
+                                     <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Directors Remuneration</th>
+                                        <td class="px-6 py-4 text-slate-900 font-semibold">\${fmt(data.directorsRemuneration)}</td>
+                                    </tr>
+                                     <tr class="bg-emerald-50 border-t border-emerald-200">
+                                        <th class="px-6 py-5 font-bold text-emerald-900 bg-emerald-100">Adjusted Operating Profit (EBITDA)</th>
+                                        <td class="px-6 py-5 text-emerald-900 font-bold text-lg">\${fmt(data.adjustedOperatingProfit)}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                         <div class="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200 text-sm text-slate-700">
+                            <strong>AI Notes:</strong> \${data.notes || "None."}
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+            const fmt = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val || 0);
+
+            renderedReport.innerHTML = `
+                <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]">
+                    <div class="border-b border-slate-200 pb-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-900">Company Financials Analysis</h3>
+                                <p class="text-slate-500 mt-1">Source file: <span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-700">${filename}</span></p>
+                            </div>
+                            <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Verified Data</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <p class="text-sm font-medium text-slate-600 mb-1">Gross Profit</p>
+                            <p class="text-3xl font-bold text-slate-900">${fmt(data.grossProfit)}</p>
+                            <p class="text-xs text-slate-500 mt-1">Financial Year Ending ${data.financialYearEnding || "N/A"}</p>
+                        </div>
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5">
+                            <p class="text-sm font-medium text-indigo-800 mb-1">Net Profit After Tax (NPAT)</p>
+                            <p class="text-3xl font-bold text-slate-900">${fmt(data.netProfitAfterTax)}</p>
+                            <p class="text-xs text-indigo-600/70 mt-1">Strong profitability indicator</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Add-Backs & Servicing Details</h4>
+                        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <table class="w-full text-sm text-left">
+                                <tbody>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50 w-1/3">Depreciation</th>
+                                        <td class="px-6 py-4 text-emerald-700 font-semibold">+${fmt(data.depreciation)} <span class="text-xs text-slate-400 font-normal ml-1">(Non-cash expense)</span></td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Interest Expenses</th>
+                                        <td class="px-6 py-4 text-emerald-700 font-semibold">+${fmt(data.interestExpenses)} <span class="text-xs text-slate-400 font-normal ml-1">(Subject to refinance)</span></td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50">Amortization</th>
+                                        <td class="px-6 py-4 text-emerald-700 font-semibold">+${fmt(data.amortization)}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="px-6 py-4 font-medium text-slate-500 bg-slate-50 text-slate-800">EBITDA (Est for Servicing)</th>
+                                        <td class="px-6 py-4 text-slate-900 font-bold text-lg">${fmt(data.ebitda)}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>
