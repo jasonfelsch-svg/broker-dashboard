@@ -44,7 +44,7 @@ app.post('/api/analyze', upload.single('document'), async (req, res) => {
 
     const filePath = req.file.path;
     const mimeType = req.file.mimetype;
-    
+
     // Choose model. We use gemini-1.5-flash as it's multimodal and fast
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -101,7 +101,7 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
   "complianceCheck": "String (Summary of compliance, eg distinct corporate entities with consistent directors)"
 }`;
     } else {
-        return res.status(400).json({ error: 'Invalid document type' });
+      return res.status(400).json({ error: 'Invalid document type' });
     }
 
     const imageParts = [
@@ -111,24 +111,24 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
     const result = await model.generateContent([prompt, ...imageParts]);
     const response = await result.response;
     const text = response.text();
-    
+
     // Clean up temporary file
     fs.unlinkSync(filePath);
 
     // Remove potential markdown code blocks if the AI still included them
     let cleanJson = text;
-    if (cleanJson.startsWith('\`\`\`json')) {
-        cleanJson = cleanJson.slice(7, -3);
-    } else if (cleanJson.startsWith('\`\`\`')) {
-        cleanJson = cleanJson.slice(3, -3);
+    if (cleanJson.startsWith('```json')) {
+      cleanJson = cleanJson.slice(7, -3);
+    } else if (cleanJson.startsWith('```')) {
+      cleanJson = cleanJson.slice(3, -3);
     }
 
     try {
-        const parsedData = JSON.parse(cleanJson.trim());
-        res.json({ success: true, data: parsedData, filename: req.file.originalname, docType });
+      const parsedData = JSON.parse(cleanJson.trim());
+      res.json({ success: true, data: parsedData, filename: req.file.originalname, docType });
     } catch (parseError) {
-        console.error("Failed to parse Gemini output:", text);
-        res.status(500).json({ error: 'Failed to parse AI output. Result might be malformed.', rawText: text });
+      console.error("Failed to parse Gemini output:", text);
+      res.status(500).json({ error: 'Failed to parse AI output. Result might be malformed.', rawText: text });
     }
 
   } catch (error) {
@@ -138,10 +138,10 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
 });
 
 // Create uploads folder if it doesn't exist
-if (!fs.existsSync('uploads')){
-    fs.mkdirSync('uploads');
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
 }
 
 app.listen(port, () => {
-  console.log(\`Server is running on port \${port}\`);
+  console.log(`Server is running on port ${port}`);
 });
