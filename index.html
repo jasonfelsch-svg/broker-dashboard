@@ -362,8 +362,14 @@
                 });
 
                 if (!response.ok) {
-                    const errPayload = await response.json();
-                    throw new Error(errPayload.error || "Server error");
+                    let errorMessage = "Server error";
+                    try {
+                         const errPayload = await response.json();
+                         errorMessage = errPayload.error || errorMessage;
+                    } catch(e) {
+                         errorMessage = await response.text(); 
+                    }
+                    throw new Error(errorMessage);
                 }
 
                 const result = await response.json();
