@@ -46,7 +46,7 @@ app.post('/api/analyze', upload.single('document'), async (req, res) => {
     const mimeType = req.file.mimetype;
 
     // Choose model. We use gemini-1.5-flash as it's multimodal and fast
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
     let prompt = "";
     if (docType === 'payslip') {
@@ -133,7 +133,11 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
 
   } catch (error) {
     console.error("API Error:", error);
-    res.status(500).json({ error: 'An error occurred during document analysis.', details: error.message });
+    res.status(500).json({
+      error: 'An error occurred during document analysis.',
+      details: error.message,
+      stack: error.stack ? error.stack.split('\n')[0] : "No stack trace available"
+    });
   }
 });
 
