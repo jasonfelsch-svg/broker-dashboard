@@ -11,6 +11,24 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('assets/luxury-home.jpg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.15;
+            /* Soft watermark effect */
+            z-index: -1;
+            pointer-events: none;
         }
 
         .glass-panel {
@@ -92,7 +110,8 @@
                             <p class="text-sm font-semibold text-slate-900 leading-none">Jason</p>
                             <p class="text-xs text-slate-500 mt-1">Lead Broker</p>
                         </div>
-                        <div class="h-10 w-10 rounded-full bg-blue-900 flex items-center justify-center text-white font-bold">
+                        <div
+                            class="h-10 w-10 rounded-full bg-blue-900 flex items-center justify-center text-white font-bold">
                             J
                         </div>
                     </div>
@@ -186,7 +205,8 @@
                         class="drop-zone flex-grow min-h-[250px] flex flex-col items-center justify-center p-8 text-center cursor-pointer">
                         <input type="file" id="fileElem" multiple accept="image/*,application/pdf" class="hidden">
 
-                        <div class="h-16 w-16 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mb-4">
+                        <div
+                            class="h-16 w-16 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mb-4">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -328,7 +348,7 @@
 
         function handleFiles(files) {
             if (files && files.length > 0) {
-                simulateAnalysis(files[0]);
+                simulateAnalysis(files);
             } else {
                 // Mock fallback for clicking the dropzone without selecting a file
                 alert("Please select a real file to upload to the AI.");
@@ -336,9 +356,10 @@
         }
 
         // --- Analysis Logic ---
-        async function simulateAnalysis(file) {
+        async function simulateAnalysis(files) {
             const docType = document.querySelector('input[name="documentType"]:checked').value;
-            const filename = file.name;
+            // Use the first filename for display if single, or count if multiple
+            const filename = files.length > 1 ? `${files.length} documents` : files[0].name;
 
             // UI State change to loading
             dropArea.classList.add('hidden');
@@ -350,7 +371,9 @@
 
             try {
                 const formData = new FormData();
-                formData.append('document', file);
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('documents', files[i]);
+                }
                 formData.append('documentType', docType);
 
                 // Send to backend
@@ -362,7 +385,7 @@
                 if (!response.ok) {
                     let errorMessage = "Server error";
                     try {
-                        const errPayload = await response.json();
+                        const errPayload = await response.clone().json();
                         errorMessage = errPayload.error || errorMessage;
                     } catch (e) {
                         errorMessage = await response.text();
@@ -547,7 +570,7 @@
 
             const formatDirectors = (directors) => {
                 if (!directors || directors.length === 0) return "N/A";
-                return directors.map(d => `<li>${ d }</li> `).join('');
+                return directors.map(d => `<li>${d}</li> `).join('');
             };
 
             renderedReport.innerHTML = `
