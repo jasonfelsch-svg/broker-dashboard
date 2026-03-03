@@ -88,7 +88,7 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
   "notes": "String (Brief analysis notes)"
 }`;
     } else if (docType === 'trust') {
-      prompt = `Analyze this Trust Deed and extract the structural blueprint details in JSON format.
+      prompt = `Analyze this document which may contain BOTH an SMSF Trust Deed AND a Bare Trust Deed (LRBA). You must extract the structural blueprint details for BOTH entities if they are present in the document.
 Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON string.
 {
   "executiveSummary": "String (A paragraph summarizing the structure)",

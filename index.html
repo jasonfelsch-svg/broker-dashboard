@@ -92,8 +92,7 @@
                             <p class="text-sm font-semibold text-slate-900 leading-none">Jason</p>
                             <p class="text-xs text-slate-500 mt-1">Lead Broker</p>
                         </div>
-                        <div
-                            class="h-10 w-10 rounded-full bg-blue-900 flex items-center justify-center text-white font-bold">
+                        <div class="h-10 w-10 rounded-full bg-blue-900 flex items-center justify-center text-white font-bold">
                             J
                         </div>
                     </div>
@@ -187,8 +186,7 @@
                         class="drop-zone flex-grow min-h-[250px] flex flex-col items-center justify-center p-8 text-center cursor-pointer">
                         <input type="file" id="fileElem" multiple accept="image/*,application/pdf" class="hidden">
 
-                        <div
-                            class="h-16 w-16 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mb-4">
+                        <div class="h-16 w-16 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mb-4">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -433,7 +431,7 @@
                 <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]">
                     <div class="border-b border-slate-200 pb-4">
                         <div class="flex justify-between items-start">
-                            <div>
+                            <div >
                                 <h3 class="text-2xl font-bold text-slate-900">Income Verification Summary</h3>
                                 <p class="text-slate-500 mt-1">Source file: <span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-700">${filename}</span></p>
                             </div>
@@ -455,7 +453,7 @@
                         </div>
                     </div>
 
-                    <div>
+                    <div >
                         <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Extracted Details</h4>
                         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                             <table class="w-full text-sm text-left">
@@ -520,7 +518,7 @@
                             </table>
                         </div>
                     </div>
-                </div >
+                </div>
                 `;
         }
 
@@ -549,14 +547,14 @@
 
             const formatDirectors = (directors) => {
                 if (!directors || directors.length === 0) return "N/A";
-                return directors.map(d => `< li >${ d }</li > `).join('');
+                return directors.map(d => `<li>${ d }</li> `).join('');
             };
 
             renderedReport.innerHTML = `
-                < div class="space-y-6 animate-[fadeIn_0.5s_ease-out]" >
+                <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]" >
                     <div class="border-b border-slate-200 pb-4">
                         <div class="flex justify-between items-start">
-                            <div>
+                            <div >
                                 <h3 class="text-2xl font-bold text-slate-900">SMSF Structure Check</h3>
                                 <p class="text-slate-500 mt-1">Source file: <span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-700">${filename}</span></p>
                             </div>
@@ -572,7 +570,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Left Column -->
                         <div class="space-y-6">
-                            <div>
+                            <div >
                                 <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">LRBA Configuration</h4>
                                 <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                                     <table class="w-full text-sm text-left">
@@ -594,7 +592,7 @@
                                 </div>
                             </div>
 
-                            <div>
+                            <div >
                                 <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Beneficiaries</h4>
                                 <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
                                     <ul class="list-disc list-inside text-sm text-slate-800 space-y-1">
@@ -606,7 +604,7 @@
 
                         <!-- Right Column -->
                         <div class="space-y-6">
-                            <div>
+                            <div >
                                 <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">SMSF Trustee (Borrower)</h4>
                                 <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm border-l-4 border-l-blue-500">
                                     <table class="w-full text-sm text-left">
@@ -636,7 +634,7 @@
                                 </div>
                             </div>
 
-                            <div>
+                            <div >
                                 <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Bare Trustee (Property Holder)</h4>
                                 <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm border-l-4 border-l-violet-500">
                                     <table class="w-full text-sm text-left">
@@ -667,7 +665,7 @@
                             </div>
                         </div>
                     </div>
-                </div >
+                </div>
                 `;
         }
         function renderFinancialsReport(filename, rawData) {
@@ -686,10 +684,10 @@
             const fmt = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val || 0);
 
             renderedReport.innerHTML = `
-                < div class="space-y-6 animate-[fadeIn_0.5s_ease-out]" >
+                <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]" >
                     <div class="border-b border-slate-200 pb-4">
                         <div class="flex justify-between items-start">
-                            <div>
+                            <div >
                                 <h3 class="text-2xl font-bold text-slate-900">Company Financials Analysis</h3>
                                 <p class="text-slate-500 mt-1">Source file: <span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-700">${filename}</span></p>
                             </div>
@@ -708,7 +706,7 @@
                         </div>
                     </div>
 
-                     <div>
+                     <div >
                         <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Key Metrics</h4>
                         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                             <table class="w-full text-sm text-left">
@@ -744,7 +742,7 @@
                             <strong>AI Notes:</strong> ${data.notes || "None."}
                         </div>
                     </div>
-                </div >
+                </div>
             `;
         }
     </script>
