@@ -45,8 +45,8 @@ app.post('/api/analyze', upload.single('document'), async (req, res) => {
     const filePath = req.file.path;
     const mimeType = req.file.mimetype;
 
-    // Choose model. We use gemini-2.5-flash as it's multimodal and fast
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // Choose explicitly the pro model for the highest legal analytical capabilities on complex multiple-trust documents
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
     let prompt = "";
     if (docType === 'payslip') {
@@ -88,7 +88,11 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
   "notes": "String (Brief analysis notes)"
 }`;
     } else if (docType === 'trust') {
-      prompt = `Analyze this document which may contain BOTH an SMSF Trust Deed AND a Bare Trust Deed (LRBA). You must extract the structural blueprint details for BOTH entities if they are present in the document.
+      prompt = `EXTREMELY IMPORTANT: You are analyzing a legal document bundle that likely contains BOTH a Self-Managed Super Fund (SMSF) Master Deed AND a Bare Trust (Holding Trust / LRBA) Deed. 
+You MUST extract the details for BOTH the SMSF Trust AND the Bare Trust. Do not stop reading after finding one of them. Scan the entire document.
+- The 'SMSF' is the parent superannuation fund (e.g., The Smith Super Fund). 
+- The 'Bare Trust' is the special purpose sub-trust created specifically to hold property for the SMSF (e.g., The Smith Property Trust).
+Extract the structural blueprint details in JSON format exactly as requested:
 Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON string.
 {
   "executiveSummary": "String (A paragraph summarizing the structure)",
