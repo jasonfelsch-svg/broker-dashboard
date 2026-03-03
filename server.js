@@ -58,10 +58,10 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
   "payPeriodEnding": "String",
   "baseIncomeYtd": "Number",
   "ytdGrossEarnings": "Number",
-  "smsfContributionYtd": "Number",
-  "smsfContributionPercentage": "String (e.g. 11%)",
-  "smsfContributionAnnualEst": "Number",
-  "smsfContributionMonthlyEst": "Number",
+  "smsfContributionYtd": "Number (Extract the YTD Superannuation or SGC amount, even if it is not explicitly called SMSF)",
+  "smsfContributionPercentage": "String (e.g. 11%, 11.5%, or extract the super rate if shown)",
+  "smsfContributionAnnualEst": "Number (Estimate annual super based on the standard 11%-11.5% rate of the annualized gross)",
+  "smsfContributionMonthlyEst": "Number (Estimate monthly super based on the annual amount)",
   "allowancesYtd": "Number",
   "commissionsYtd": "Number",
   "bonusYtd": "Number",
@@ -71,7 +71,7 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
   "paymentAccountLast4": "String",
   "annualGrossEstimate": "Number (Strictly calculate the annualized BASE gross income. Extract the 'Annual Salary' if written on the payslip, OR multiply the normal base pay period amount by 52/26/12. Do NOT extrapolate raw YTD if the employee started mid-year)",
   "netPayPerPeriod": "Number (The net pay amount for this specific period)",
-  "payPeriodFrequency": "String (e.g. Weekly, Fortnightly, Monthly)"
+  "payPeriodFrequency": "String (CRITICAL: Look at the 'Pay Period' start and end dates on the payslip. If it spans ~14 days, output 'Fortnightly'. If it spans ~7 days, output 'Weekly'. If it spans a whole calendar month, output 'Monthly'.)"
 }`;
     } else if (docType === 'financials') {
       prompt = `Analyze this company financial document and extract the following details in JSON format.
