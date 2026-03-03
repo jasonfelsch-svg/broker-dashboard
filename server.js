@@ -133,17 +133,17 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
 
     // Temporary files already cleaned up during map
 
-    // Remove potential markdown code blocks if the AI still included them
+    // Robustly extract the JSON object bridging from the first '{' to the last '}'
     let cleanJson = text;
-    if (cleanJson.startsWith('```json')) {
-      cleanJson = cleanJson.slice(7, -3);
-    } else if (cleanJson.startsWith('```')) {
-      cleanJson = cleanJson.slice(3, -3);
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      cleanJson = jsonMatch[0];
     }
 
     try {
       const parsedData = JSON.parse(cleanJson.trim());
-      res.json({ success: true, data: parsedData, filename: req.file.originalname, docType });
+      const filenames = req.files.map(f => f.originalname).join(', ');
+      res.json({ success: true, data: parsedData, filename: filenames, docType });
     } catch (parseError) {
       console.error("Failed to parse Gemini output:", text);
       res.status(500).json({ error: 'Failed to parse AI output. Result might be malformed.', rawText: text });
