@@ -69,7 +69,7 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
   "overtimeYtd": "Number",
   "postTaxDeductionsYtd": "Number",
   "paymentAccountLast4": "String",
-  "annualGrossEstimate": "Number (Calculate the annualized gross income accurately based on available YTD data or pay periods)",
+  "annualGrossEstimate": "Number (Strictly calculate the annualized BASE gross income. Extract the 'Annual Salary' if written on the payslip, OR multiply the normal base pay period amount by 52/26/12. Do NOT extrapolate raw YTD if the employee started mid-year)",
   "netPayPerPeriod": "Number (The net pay amount for this specific period)",
   "payPeriodFrequency": "String (e.g. Weekly, Fortnightly, Monthly)"
 }`;
