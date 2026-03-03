@@ -91,12 +91,15 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
       prompt = `Analyze this Trust Deed and extract the structural blueprint details in JSON format.
 Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON string.
 {
+  "executiveSummary": "String (A paragraph summarizing the structure)",
   "smsfName": "String",
   "establishmentDate": "String",
   "governingRulesVersion": "String",
   "beneficiaries": ["String", "String"],
   "lrbaDetails": {
     "permitted": "Boolean",
+    "structureType": "String (e.g. Standard LRBA)",
+    "complianceStatus": "String (Summary of compliance)",
     "borrowingEntity": "String"
   },
   "smsfTrustee": {
