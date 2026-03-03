@@ -45,8 +45,8 @@ app.post('/api/analyze', upload.single('document'), async (req, res) => {
     const filePath = req.file.path;
     const mimeType = req.file.mimetype;
 
-    // Choose explicitly the pro model for the highest legal analytical capabilities on complex multiple-trust documents
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+    // Choose explicitly the flash model, as the user API key lacks quota for the pro model
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     let prompt = "";
     if (docType === 'payslip') {
