@@ -68,37 +68,49 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
   "overtimeIncluded": "Boolean",
   "overtimeYtd": "Number",
   "postTaxDeductionsYtd": "Number",
-  "paymentAccountLast4": "String"
+  "paymentAccountLast4": "String",
+  "annualGrossEstimate": "Number (Calculate the annualized gross income accurately based on available YTD data or pay periods)",
+  "netPayPerPeriod": "Number (The net pay amount for this specific period)",
+  "payPeriodFrequency": "String (e.g. Weekly, Fortnightly, Monthly)"
 }`;
     } else if (docType === 'financials') {
       prompt = `Analyze this company financial document and extract the following details in JSON format.
 Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON string.
 {
+  "companyName": "String",
+  "financialYearEnding": "String",
   "grossProfit": "Number",
   "netProfitAfterTax": "Number",
-  "financialYearEnding": "String",
-  "depreciation": "Number",
-  "interestExpenses": "Number",
-  "amortization": "Number",
-  "ebitda": "Number"
+  "depreciationDeductible": "Number",
+  "interestExpense": "Number",
+  "directorsRemuneration": "Number",
+  "adjustedOperatingProfit": "Number (Calculate EBITDA or Adjusted Operating Profit using the add-backs)",
+  "notes": "String (Brief analysis notes)"
 }`;
     } else if (docType === 'trust') {
       prompt = `Analyze this Trust Deed and extract the structural blueprint details in JSON format.
 Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON string.
 {
-  "executiveSummary": "String (A paragraph summarizing the structure)",
   "smsfName": "String",
-  "smsfAbn": "String",
-  "smsfSetupDate": "String",
-  "smsfCorporateTrustee": "String",
-  "smsfCorporateTrusteeAcn": "String",
-  "smsfDirectors": ["String", "String"],
-  "bareTrustName": "String",
-  "bareTrustExecutionDate": "String",
-  "bareTrustCorporateTrustee": "String",
-  "bareTrustCorporateTrusteeAcn": "String",
-  "bareTrustDirectors": ["String", "String"],
-  "complianceCheck": "String (Summary of compliance, eg distinct corporate entities with consistent directors)"
+  "establishmentDate": "String",
+  "governingRulesVersion": "String",
+  "beneficiaries": ["String", "String"],
+  "lrbaDetails": {
+    "permitted": "Boolean",
+    "borrowingEntity": "String"
+  },
+  "smsfTrustee": {
+    "type": "String (Corporate or Individual)",
+    "name": "String",
+    "acn": "String",
+    "directors": ["String", "String"]
+  },
+  "bareTrustee": {
+    "type": "String (Corporate or Individual)",
+    "name": "String",
+    "acn": "String",
+    "directors": ["String", "String"]
+  }
 }`;
     } else {
       return res.status(400).json({ error: 'Invalid document type' });

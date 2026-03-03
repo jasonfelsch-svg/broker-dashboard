@@ -364,10 +364,10 @@
                 if (!response.ok) {
                     let errorMessage = "Server error";
                     try {
-                         const errPayload = await response.json();
-                         errorMessage = errPayload.error || errorMessage;
-                    } catch(e) {
-                         errorMessage = await response.text(); 
+                        const errPayload = await response.json();
+                        errorMessage = errPayload.error || errorMessage;
+                    } catch (e) {
+                        errorMessage = await response.text();
                     }
                     throw new Error(errorMessage);
                 }
@@ -418,12 +418,16 @@
                 overtimeIncluded: true,
                 overtimeYtd: 4200.00,
                 postTaxDeductionsYtd: 1500.00,
-                paymentAccountLast4: "1234"
+                paymentAccountLast4: "1234",
+                annualGrossEstimate: 106400.00,
+                netPayPerPeriod: 3500.00,
+                payPeriodFrequency: "Fortnightly"
             };
 
             const fmt = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val || 0);
-            const annualGross = (data.ytdGrossEarnings / 38) * 52; // Mock extrapolation
-            const netPayPerPeriod = (data.ytdGrossEarnings - (data.postTaxDeductionsYtd || 0)) / 19; // Mock
+            const annualGross = data.annualGrossEstimate;
+            const netPayPerPeriod = data.netPayPerPeriod;
+            const freq = data.payPeriodFrequency || "Fortnightly";
 
             renderedReport.innerHTML = `
                 <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]">
@@ -516,8 +520,8 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            `;
+                </div >
+                `;
         }
 
         function renderTrustReport(filename, rawData) {
@@ -545,11 +549,11 @@
 
             const formatDirectors = (directors) => {
                 if (!directors || directors.length === 0) return "N/A";
-                return directors.map(d => `<li>\${d}</li>`).join('');
+                return directors.map(d => `< li >\${ d }</li > `).join('');
             };
 
             renderedReport.innerHTML = `
-                <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]">
+                < div class="space-y-6 animate-[fadeIn_0.5s_ease-out]" >
                     <div class="border-b border-slate-200 pb-4">
                         <div class="flex justify-between items-start">
                             <div>
@@ -663,8 +667,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
+                </div >
+                `;
         }
         function renderFinancialsReport(filename, rawData) {
             const data = Object.keys(rawData || {}).length > 0 ? rawData : {
@@ -682,7 +686,7 @@
             const fmt = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val || 0);
 
             renderedReport.innerHTML = `
-                <div class="space-y-6 animate-[fadeIn_0.5s_ease-out]">
+                < div class="space-y-6 animate-[fadeIn_0.5s_ease-out]" >
                     <div class="border-b border-slate-200 pb-4">
                         <div class="flex justify-between items-start">
                             <div>
@@ -740,7 +744,7 @@
                             <strong>AI Notes:</strong> ${data.notes || "None."}
                         </div>
                     </div>
-                </div>
+                </div >
             `;
         }
     </script>
