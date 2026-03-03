@@ -31,10 +31,10 @@ function fileToGenerativePart(path, mimeType) {
 }
 
 // API endpoint to handle document analysis
-app.post('/api/analyze', upload.single('document'), async (req, res) => {
+app.post('/api/analyze', upload.array('documents', 10), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded' });
     }
 
     const docType = req.body.documentType;
@@ -42,8 +42,6 @@ app.post('/api/analyze', upload.single('document'), async (req, res) => {
       return res.status(400).json({ error: 'Missing document type' });
     }
 
-    const filePath = req.file.path;
-    const mimeType = req.file.mimetype;
 
     // Choose explicitly the flash model, as the user API key lacks quota for the pro model
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -123,16 +121,17 @@ Do NOT use Markdown formatting (like \`\`\`json). Just return the raw JSON strin
       return res.status(400).json({ error: 'Invalid document type' });
     }
 
-    const imageParts = [
-      fileToGenerativePart(filePath, mimeType),
-    ];
+    const imageParts = req.files.map(file => {
+      const part = fileToGenerativePart(file.path, file.mimetype);
+      fs.unlinkSync(file.path);
+      return part;
+    });
 
     const result = await model.generateContent([prompt, ...imageParts]);
     const response = await result.response;
     const text = response.text();
 
-    // Clean up temporary file
-    fs.unlinkSync(filePath);
+    // Temporary files already cleaned up during map
 
     // Remove potential markdown code blocks if the AI still included them
     let cleanJson = text;
