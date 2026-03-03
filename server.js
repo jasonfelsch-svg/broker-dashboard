@@ -45,8 +45,8 @@ app.post('/api/analyze', upload.single('document'), async (req, res) => {
     const filePath = req.file.path;
     const mimeType = req.file.mimetype;
 
-    // Choose model. We use gemini-1.5-flash as it's multimodal and fast
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    // Choose model. We use gemini-2.5-flash as it's multimodal and fast
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     let prompt = "";
     if (docType === 'payslip') {
